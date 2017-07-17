@@ -8,7 +8,7 @@ Upload CSV timetable to Google Calendar
     - Do not place text outside of the allocated time slots
     - Subjects that have the same name and are vertically adjacent will be merged
     - Colour represents the colour id in Google Calendar (See image below)
-3. Run `python upload.csv`
+3. Run `python upload.py`
     - Will open webpage to get token
     - Token saved in `~/.credentials/calendar-python-quickstart.json`
     - Will parse the csv and upload events accordingly
