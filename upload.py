@@ -62,8 +62,8 @@ def main():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
 
-    CALENDAR_NAME = 'csv-to-calendar'
-    
+    CALENDAR_NAME = 'csv-to-calendar-2'
+
     calendarID = initCalendar(service, CALENDAR_NAME)
 
     mat = getMatrixFromCSV('timetable.csv')
@@ -95,6 +95,8 @@ def getCalendarId(service, calendarSummary):
         calendar_list = service.calendarList().list(pageToken=page_token).execute()
         for calendar_list_entry in calendar_list['items']:
             if calendar_list_entry['summary'] == calendarSummary:
+                print(calendar_list_entry['summary'])
+                print(calendar_list_entry['id'])
                 return calendar_list_entry['id']
         page_token = calendar_list.get('nextPageToken')
         if not page_token:
@@ -115,18 +117,20 @@ def initCalendar(service, summary):
 
     newID = calenderID
     if calenderID != None:
-        service.calendars().clear(calenderID).execute()
-        print('Calendar ' + summary +' has been cleared')
-    else:
-        calendar = {
-        'summary': summary,
-        'timeZone': 'Africa/Johannesburg'
-        }
+        print(summary)
+        print(newID)
+        service.calendars().delete(calendarId=newID).execute()
+        print('Calendar ' + summary +' has been deleted')
 
-        created_calendar = service.calendars().insert(body=calendar).execute()
+    calendar = {
+    'summary': summary,
+    'timeZone': 'Africa/Johannesburg'
+    }
 
-        print('Calendar ' + summary +' has been created')
-        newID = created_calendar['id']
+    created_calendar = service.calendars().insert(body=calendar).execute()
+
+    print('Calendar ' + summary +' has been created')
+    newID = created_calendar['id']
 
     return newID
 
