@@ -112,10 +112,10 @@ def uploadEvent(service, event, calenderID):
 def initCalendar(service, summary):
 
     calenderID = getCalendarId(service, summary)
-
+    print(calenderID)
     newID = calenderID
     if calenderID != None:
-        service.calendars().clear(calenderID).execute()
+        service.calendars().clear(calendarId=calenderID).execute()
         print('Calendar ' + summary +' has been cleared')
     else:
         calendar = {
@@ -174,7 +174,7 @@ def createEvent(dayCount, start, duration, subject, location, colour):
         'timeZone': 'Africa/Johannesburg'
       },
       'recurrence': [
-        'RRULE:FREQ=WEEKLY;UNTIL=20171102T000000Z'
+        'RRULE:FREQ=WEEKLY;UNTIL=20181102T000000Z'
       ],
       'reminders': {
         'useDefault': False,
