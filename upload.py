@@ -63,7 +63,7 @@ def main():
     service = discovery.build('calendar', 'v3', http=http)
 
     CALENDAR_NAME = 'csv-to-calendar'
-    
+
     calendarID = initCalendar(service, CALENDAR_NAME)
 
     mat = getMatrixFromCSV('timetable.csv')
@@ -73,7 +73,7 @@ def main():
         uploadEvent(service, x, calendarID)
 
 
-def deleteAllCalendars(service, summary):
+def deleteAllCalendars_NO(service, summary):
     page_token = None
     while True:
         calendar_list = service.calendarList().list(pageToken=page_token).execute()
@@ -110,23 +110,21 @@ def uploadEvent(service, event, calenderID):
     print('Event created!')
 
 def initCalendar(service, summary):
-
     calenderID = getCalendarId(service, summary)
-    print(calenderID)
     newID = calenderID
     if calenderID != None:
-        service.calendars().clear(calendarId=calenderID).execute()
-        print('Calendar ' + summary +' has been cleared')
-    else:
-        calendar = {
-        'summary': summary,
-        'timeZone': 'Africa/Johannesburg'
-        }
+        service.calendars().delete(calendarId=calenderID).execute()
+        print('Calendar ' + summary +' has been deleted')
 
-        created_calendar = service.calendars().insert(body=calendar).execute()
+    calendar = {
+    'summary': summary,
+    'timeZone': 'Africa/Johannesburg'
+    }
 
-        print('Calendar ' + summary +' has been created')
-        newID = created_calendar['id']
+    created_calendar = service.calendars().insert(body=calendar).execute()
+
+    print('Calendar ' + summary +' has been created')
+    newID = created_calendar['id']
 
     return newID
 
