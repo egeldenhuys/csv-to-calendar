@@ -3,6 +3,7 @@ import httplib2
 import os
 import csv
 import json
+import sys
 
 from apiclient import discovery
 from oauth2client import client
@@ -11,11 +12,13 @@ from oauth2client.file import Storage
 
 import datetime
 
-try:
-    import argparse
-    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-except ImportError:
-    flags = None
+# try:
+#     import argparse
+#     flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+# except ImportError:
+#     flags = None
+
+flags = None
 
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/calendar-python-quickstart.json
@@ -62,7 +65,7 @@ def main():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
 
-    CALENDAR_NAME = 'csv-to-calendar'
+    CALENDAR_NAME = sys.argv[2]
 
     calendarID = initCalendar(service, CALENDAR_NAME)
 
@@ -144,7 +147,7 @@ def getColours(service):
         #print '  Background: %s' % color['background']
         #print '  Foreground: %s' % color['foreground']
 
-def createEvent(dayCount, start, duration, subject, location, colour):
+def createEvent(dayCount, start, duration, subject, location='', colour=''):
 
     day = 17 + dayCount
     day = int(day)
@@ -249,7 +252,7 @@ def getMatrixFromCSV(csvFile):
 
     matrix = []
 
-    with open('timetable.csv', newline='') as f:
+    with open(sys.argv[1], newline='') as f:
         reader = csv.reader(f)
         for row in reader:
             colCount = 0;
