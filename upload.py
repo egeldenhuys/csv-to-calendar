@@ -2,7 +2,6 @@ from __future__ import print_function
 import httplib2
 import os
 import csv
-import json
 
 from apiclient import discovery
 from oauth2client import client
@@ -17,10 +16,14 @@ try:
 except ImportError:
     flags = None
 
+# constant
+CALENDAR_NAME = 'csv-to-calendar'
+
+
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/calendar-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/calendar'
-CLIENT_SECRET_FILE = 'client_secret.json'
+CLIENT_SECRET_FILE = '.client_secret.json'
 APPLICATION_NAME = 'CSV to Calendar'
 
 
@@ -47,10 +50,11 @@ def get_credentials():
         flow.user_agent = APPLICATION_NAME
         if flags:
             credentials = tools.run_flow(flow, store, flags)
-        else: # Needed only for compatibility with Python 2.6
+        else:  # Needed only for compatibility with Python 2.6
             credentials = tools.run(flow, store)
         print('Storing credentials to ' + credential_path)
     return credentials
+
 
 def main():
     """Shows basic usage of the Google Calendar API.
@@ -62,15 +66,13 @@ def main():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('calendar', 'v3', http=http)
 
-    CALENDAR_NAME = 'csv-to-calendar'
-
-    calendarID = initCalendar(service, CALENDAR_NAME)
+    calendar_id = initCalendar(service, CALENDAR_NAME)
 
     mat = getMatrixFromCSV('timetable.csv')
     events = parseMatrixIntoEvents(mat)
 
     for x in events:
-        uploadEvent(service, x, calendarID)
+        uploadEvent(service, x, calendar_id)
 
 
 def deleteAllCalendars_NO(service, summary):
@@ -81,13 +83,14 @@ def deleteAllCalendars_NO(service, summary):
             if calendar_list_entry['summary'] == summary:
                 service.calendars().delete(calendarId=calendar_list_entry['id']).execute()
                 # service.calendars().delete('secondaryCalendarId').execute()
-                print('Calendar ' + calendar_list_entry['summary'] +' has been deleted')
+                print('Calendar ' + calendar_list_entry['summary'] + ' has been deleted')
 
         page_token = calendar_list.get('nextPageToken')
         if not page_token:
             break
 
     return None
+
 
 def getCalendarId(service, calendarSummary):
     page_token = None
@@ -102,12 +105,14 @@ def getCalendarId(service, calendarSummary):
 
     return None
 
+
 def uploadEvent(service, event, calenderID):
     #print(event)
     print('Creating event... ' + event['summary'] + ' @ ' + event['start']['dateTime'])
 
     event = service.events().insert(calendarId=calenderID, body=event).execute()
     print('Event created!')
+
 
 def initCalendar(service, summary):
     calenderID = getCalendarId(service, summary)
@@ -128,6 +133,7 @@ def initCalendar(service, summary):
 
     return newID
 
+
 def getColours(service):
     colors = service.colors().get().execute()
 
@@ -143,6 +149,7 @@ def getColours(service):
         print('colorId: %s'.format(id))
         #print '  Background: %s' % color['background']
         #print '  Foreground: %s' % color['foreground']
+
 
 def createEvent(dayCount, start, duration, subject, location, colour):
 
@@ -184,7 +191,6 @@ def createEvent(dayCount, start, duration, subject, location, colour):
     }
 
     return googleEvent
-
 
 
 def parseMatrixIntoEvents(mat):
@@ -243,16 +249,17 @@ def parseMatrixIntoEvents(mat):
 
     return eventList
 
+
 def getMatrixFromCSV(csvFile):
 
-    rowCount = 0;
+    rowCount = 0
 
     matrix = []
 
     with open('timetable.csv', newline='') as f:
         reader = csv.reader(f)
         for row in reader:
-            colCount = 0;
+            colCount = 0
 
             if rowCount >= len(matrix):
                 #print('Adding row to matrix')
@@ -265,6 +272,7 @@ def getMatrixFromCSV(csvFile):
             rowCount += 1
 
     return matrix
+
 
 if __name__ == '__main__':
     main()
