@@ -2,12 +2,11 @@
 Upload CSV timetable to Google Calendar
 
 ## Setup and Usage
-1. Follow https://developers.google.com/google-apps/calendar/quickstart/python
-    - Place `client_secret.json` in project directory. (Keep this file secret)
-2. Modify the `timetable.csv` template using Libreoffice Calc
+1. Modify the `timetable.csv` template using Libreoffice Calc
     - Do not place text outside of the allocated time slots
     - Subjects that have the same name and are vertically adjacent will be merged
     - Colour represents the colour id in Google Calendar (See image below)
+2. Run `pip install -r requirements.txt` to install all the dependencies.    
 3. Run `python upload.py`
     - Will open webpage to get token
     - Token saved in `~/.credentials/calendar-python-quickstart.json`
